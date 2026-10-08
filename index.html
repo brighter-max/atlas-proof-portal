@@ -8,13 +8,20 @@
 </head>
 <body class="bg-gray-50 font-sans text-gray-900 antialiased">
 
-  <!-- Spinner Overlay while fetching data -->
-  <div id="loading" class="fixed inset-0 bg-white flex flex-col items-center justify-center text-[#1c4475] font-bold space-y-2 z-50">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1c4475]"></div>
-    <p>Loading secure design specifications...</p>
+  <!-- Smart Overlay Display -->
+  <div id="loading" class="fixed inset-0 bg-white flex flex-col items-center justify-center text-[#1c4475] font-bold space-y-4 z-50">
+    <div id="spinner" class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1c4475]"></div>
+    <p id="loading-text">Loading secure design specifications...</p>
+    
+    <!-- Backup Manual Input Form appears only if the link loses its ID string -->
+    <div id="manual-search" class="hidden max-w-sm w-full mx-auto p-6 bg-gray-50 border rounded-xl text-center space-y-3">
+      <p class="text-xs text-gray-500 font-medium">Please enter your reference token manually to retrieve your file records:</p>
+      <input type="text" id="manual-id-input" placeholder="e.g., QTN-21717-1" class="w-full p-2 border rounded-lg uppercase text-center font-mono focus:outline-none focus:ring-1 focus:ring-[#1c4475]" />
+      <button onclick="loadManualQuote()" class="w-full bg-[#1c4475] text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider">Fetch System Profile</button>
+    </div>
   </div>
 
-  <!-- Branded Corporate Header using Atlas Flags Logo tones -->
+  <!-- Branded Corporate Header Layout -->
   <header class="bg-[#1c4475] text-white shadow-md py-4 px-6 flex justify-between items-center">
     <div>
       <h1 class="text-xl font-black tracking-wider uppercase m-0">Atlas Flags</h1>
@@ -26,10 +33,7 @@
     </div>
   </header>
 
-  <!-- Main Display Screen Split layout -->
   <main class="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <!-- Left Section: Image Rendering Canvas -->
     <section class="lg:col-span-2 space-y-4">
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200/60">
         <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
@@ -45,7 +49,6 @@
       </div>
     </section>
 
-    <!-- Right Section: Actions & Data Information -->
     <section class="space-y-6">
       <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60 space-y-5">
         <h3 class="font-black text-base uppercase tracking-wide text-[#1c4475] border-b border-gray-100 pb-2">Order Information</h3>
@@ -57,7 +60,6 @@
           </div>
         </div>
 
-        <!-- Controls View Panel -->
         <div id="action-panel" class="pt-2 space-y-4">
           <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60">
             <label class="flex items-start space-x-3 cursor-pointer">
@@ -68,7 +70,6 @@
             </label>
           </div>
 
-          <!-- Red Production Trigger Button -->
           <button id="approve-btn" onclick="submitDecision('approved')" class="w-full bg-[#e42424] hover:bg-red-700 text-white font-extrabold py-3.5 px-4 rounded-lg transition duration-150 ease-in-out shadow-md text-center uppercase tracking-wider text-xs">
             Approve Layout & Begin Production
           </button>
@@ -88,7 +89,6 @@
           </div>
         </div>
 
-        <!-- Success Notification Box -->
         <div id="success-panel" class="p-4 rounded-lg bg-green-50 text-green-800 text-center border border-green-200 hidden">
           <p class="font-bold text-sm">Action Successfully Submitted</p>
           <p id="success-msg" class="text-xs mt-1"></p>
@@ -98,25 +98,18 @@
   </main>
 
   <script>
-    // Grab the QTN reference out of the browser URL bar parameter (?id=)
     const urlParams = new URLSearchParams(window.location.search);
-    const quoteId = urlParams.get('id');
-    
-    // Explicitly target your direct Frappe Cloud instance 
+    let quoteId = urlParams.get('id');
     const erpDomain = "https://erpnext.com";
-    
-    if (quoteId) {
-      document.getElementById('quote-id-display').innerText = "Reference: " + quoteId;
-    }
 
-    // Call the ERPNext Database REST Engine automatically 
-    async function loadQuoteData() {
-      if (!quoteId) {
-        document.getElementById('loading').innerHTML = `<p class="text-red-600 p-4 text-center">Error: Missing quote reference. Make sure the URL address bar ends exactly with <b>/?id=YOUR-QTN-NUMBER</b></p>`;
-        return;
-      }
+    async function fetchQuoteFromERP(id) {
+      document.getElementById('spinner').classList.remove('hidden');
+      document.getElementById('manual-search').classList.add('hidden');
+      document.getElementById('loading-text').innerText = "Loading secure design specifications...";
+      document.getElementById('quote-id-display').innerText = "Reference: " + id;
+
       try {
-        const response = await fetch(`${erpDomain}/api/resource/Quotation/${quoteId}`);
+        const response = await fetch(`${erpDomain}/api/resource/Quotation/${id}`);
         if (response.ok) {
           const resJson = await response.json();
           const data = resJson.data;
@@ -129,29 +122,50 @@
             imgEl.classList.remove('hidden');
             document.getElementById('no-image-placeholder').classList.add('hidden');
           }
+          document.getElementById('loading').classList.add('hidden');
         } else {
-          document.getElementById('loading').innerHTML = `<p class="text-red-500">Could not retrieve quote reference "${quoteId}". Please check the ID numbers match.</p>`;
+          showManualForm(`Could not locate quote reference "${id}". Double check the reference configuration digits.`);
         }
       } catch (err) {
-        console.error("Connection failed", err);
-      } finally {
-        if (quoteId) {
-          document.getElementById('loading').classList.add('hidden');
-        }
+        showManualForm("Database communication gap. Please enter details explicitly.");
       }
     }
 
-    // Process button click events back to your server
+    function showManualForm(msg) {
+      document.getElementById('spinner').classList.add('hidden');
+      document.getElementById('loading-text').innerText = msg;
+      document.getElementById('manual-search').classList.remove('hidden');
+    }
+
+    function loadManualQuote() {
+      const inputId = document.getElementById('manual-id-input').value.trim();
+      if (inputId) {
+        quoteId = inputId;
+        fetchQuoteFromERP(inputId);
+      }
+    }
+
+    window.onload = function() {
+      if (!quoteId) {
+        showManualForm("Missing reference code connection parameter.");
+      } else {
+        fetchQuoteFromERP(quoteId);
+      }
+    };
+
     async function submitDecision(status) {
       const isChecked = document.getElementById('termsCheck').checked;
       const feedback = document.getElementById('feedback-text').value;
 
       if (status === 'approved' && !isChecked) {
-        alert("Please click the confirmation checkbox to verify your production layout specifications layout.");
+        alert("Please confirm validation criteria checkboxes layout terms before submission.");
         return;
       }
 
       document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('spinner').classList.remove('hidden');
+      document.getElementById('manual-search').classList.add('hidden');
+      document.getElementById('loading-text').innerText = "Registering production authorization tokens...";
 
       try {
         const response = await fetch(`${erpDomain}/api/method/custom_app.api.submit_proof_decision`, {
@@ -170,15 +184,3 @@
           document.getElementById('success-msg').innerText = status === 'approved' 
             ? "Your approval has been logged. An automatic production draft order has been created for the team."
             : "Your adjustments were transferred straight to our custom art desk.";
-        }
-      } catch (err) {
-        alert("Transaction could not be completed.");
-      } finally {
-        document.getElementById('loading').classList.add('hidden');
-      }
-    }
-
-    window.onload = loadQuoteData;
-  </script>
-</body>
-</html>

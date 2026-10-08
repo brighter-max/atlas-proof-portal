@@ -4,94 +4,108 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Atlas Flags - Production Proof & Quote Portal</title>
-  <script src="https://tailwindcss.com"></script>
+  <style>
+    /* Native Browser Styles - 100% Unblockable */
+    body { background-color: #f9fafb; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color: #111827; margin: 0; padding: 0; }
+    header { background-color: #1c4475; color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    h1 { margin: 0; font-size: 24px; font-weight: 900; tracking-letter: 1px; text-transform: uppercase; }
+    .subtitle { font-size: 10px; opacity: 0.7; font-weight: 600; text-transform: uppercase; margin: -2px 0 0 0; letter-spacing: 1px; }
+    .ref-tag { font-family: monospace; font-size: 12px; font-weight: bold; color: #fca5a5; background-color: rgba(0,0,0,0.2); padding: 4px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
+    main { max-w: 1100px; margin: 32px auto; padding: 0 16px; display: grid; grid-template-columns: 2fr 1fr; gap: 32px; }
+    @media (max-width: 768px) { main { grid-template-columns: 1fr; } }
+    .card { background-color: white; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; }
+    .card-header { display: flex; justify-content: space-between; align-items: center; border-b: 1px solid #f3f4f6; padding-bottom: 12px; margin-bottom: 16px; }
+    .card-title { font-size: 12px; uppercase; font-weight: 800; color: #9ca3af; letter-spacing: 1px; margin: 0; text-transform: uppercase; }
+    .badge { bg-color: #fef3c7; color: #92400e; font-weight: bold; font-size: 10px; padding: 2px 8px; border-radius: 9999px; text-transform: uppercase; border: 1px solid #fde68a; }
+    .canvas { background-color: #18181b; border-radius: 8px; min-height: 400px; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .canvas img { max-height: 480px; object-fit: contain; border-radius: 4px; }
+    .info-label { font-size: 10px; font-weight: bold; color: #9ca3af; text-transform: uppercase; display: block; margin-bottom: 4px; }
+    .info-value { font-weight: bold; color: #1f2937; font-size: 16px; }
+    .checkbox-container { background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px; display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
+    .checkbox-container input { width: 18px; height: 18px; margin-top: 2px; accent-color: #1c4475; }
+    .checkbox-text { font-size: 12px; color: #475569; line-height: 1.5; font-weight: 500; }
+    .btn-approve { w-width: 100%; display: block; width: 100%; background-color: #e42424; color: white; border: none; padding: 14px; font-size: 13px; font-weight: 800; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: background 0.15s; box-shadow: 0 4px 6px rgba(228,36,36,0.15); }
+    .btn-approve:hover { background-color: #b91c1c; }
+    .textarea-label { font-size: 11px; font-weight: bold; color: #9ca3af; text-transform: uppercase; display: block; margin: 24px 0 6px 0; }
+    textarea { width: 100%; box-sizing: border-box; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #f9fafb; font-size: 13px; resize: vertical; }
+    textarea:focus { background-color: white; border-color: #1c4475; outline: none; }
+    .btn-revision { width: 100%; background-color: white; color: #374151; border: 1px solid #d1d5db; padding: 10px; font-size: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 8px; text-transform: uppercase; transition: background 0.15s; }
+    .btn-revision:hover { background-color: #f9fafb; }
+    #loading { fixed-position: fixed; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: bold; color: #1c4475; z-index: 9999; gap: 16px; }
+    .spinner { width: 32px; height: 32px; border: 3px solid #e5e7eb; border-bottom-color: #1c4475; border-radius: 50%; animation: rotation 1s linear infinite; }
+    @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .search-card { max-w: 360px; width: 100%; padding: 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+    .search-card input { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; text-align: center; text-transform: uppercase; font-family: monospace; font-size: 14px; margin: 12px 0; }
+    .search-card button { width: 100%; background: #1c4475; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; text-transform: uppercase; }
+    .success-box { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 16px; border-radius: 8px; text-align: center; display: none; }
+  </style>
 </head>
-<body class="bg-gray-50 font-sans text-gray-900 antialiased">
+<body>
 
-  <!-- Smart Overlay Display -->
-  <div id="loading" class="fixed inset-0 bg-white flex flex-col items-center justify-center text-[#1c4475] font-bold space-y-4 z-50">
-    <div id="spinner" class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1c4475]"></div>
+  <!-- Secure Loading Layer -->
+  <div id="loading">
+    <div id="spinner" class="spinner"></div>
     <p id="loading-text">Loading secure design specifications...</p>
     
-    <!-- Backup Manual Input Form appears only if the link loses its ID string -->
-    <div id="manual-search" class="hidden max-w-sm w-full mx-auto p-6 bg-gray-50 border rounded-xl text-center space-y-3">
-      <p class="text-xs text-gray-500 font-medium">Please enter your reference token manually to retrieve your file records:</p>
-      <input type="text" id="manual-id-input" placeholder="e.g., QTN-21717-1" class="w-full p-2 border rounded-lg uppercase text-center font-mono focus:outline-none focus:ring-1 focus:ring-[#1c4475]" />
-      <button onclick="loadManualQuote()" class="w-full bg-[#1c4475] text-white py-2 rounded-lg text-xs font-bold uppercase tracking-wider">Fetch System Profile</button>
+    <div id="manual-search" class="search-card">
+      <p style="font-size: 13px; color: #64748b; margin: 0;">Please enter your reference token manually to retrieve your files:</p>
+      <input type="text" id="manual-id-input" placeholder="e.g., QTN-21717-1" />
+      <button onclick="loadManualQuote()">Fetch System Profile</button>
     </div>
   </div>
 
-  <!-- Branded Corporate Header Layout -->
-  <header class="bg-[#1c4475] text-white shadow-md py-4 px-6 flex justify-between items-center">
+  <header>
     <div>
-      <h1 class="text-xl font-black tracking-wider uppercase m-0">Atlas Flags</h1>
-      <p class="text-[10px] opacity-70 tracking-widest font-semibold uppercase -mt-0.5">Made in the USA Since 1938</p>
+      <h1>Atlas Flags</h1>
+      <p class="subtitle">Made in the USA Since 1938</p>
     </div>
-    <div class="text-right">
-      <p class="text-xs uppercase font-bold tracking-wide text-white/80">Digital Verification Link</p>
-      <p id="quote-id-display" class="font-mono text-xs font-bold text-red-400">Reference: Loading...</p>
-    </div>
+    <div class="ref-tag" id="quote-id-display">Reference: Loading...</div>
   </header>
 
-  <main class="max-w-6xl mx-auto py-8 px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <section class="lg:col-span-2 space-y-4">
-      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-200/60">
-        <div class="flex justify-between items-center border-b border-gray-100 pb-3 mb-4">
-          <h2 class="text-xs uppercase font-extrabold tracking-wider text-gray-400">Digital Pre-Production Blueprint</h2>
-          <span class="bg-amber-100 text-amber-800 font-bold text-[10px] tracking-wide uppercase px-2 py-0.5 rounded-full border border-amber-200">Action Required</span>
+  <main>
+    <!-- Left Spec View Canvas -->
+    <section>
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Digital Pre-Production Blueprint</h2>
+          <span class="badge">Action Required</span>
         </div>
-        
-        <div class="bg-zinc-900 rounded-lg border border-zinc-800 flex items-center justify-center p-6 min-h-[440px] shadow-inner">
-          <img id="proof-image" src="" alt="Atlas Flags Proof Display" class="max-h-[500px] object-contain rounded hidden" />
-          <div id="no-image-placeholder" class="text-gray-500 text-xs italic">No digital proof file attached to this quotation yet.</div>
+        <div class="canvas">
+          <img id="proof-image" src="" alt="Atlas Flags Proof Display" style="display: none;" />
+          <div id="no-image-placeholder" style="color: #71717a; font-size: 13px; font-style: italic;">No digital proof file attached to this quotation yet.</div>
         </div>
-        <p class="text-xs text-gray-400 italic mt-3 text-center">Note: Colors on screen may display variations based on device calibration. Manufacturing runs match target standard PMS formulations.</p>
+        <p style="font-size: 11px; color: #9ca3af; font-style: italic; text-align: center; margin-top: 12px;">Note: Colors on screen may display variations based on device calibration. Manufacturing runs match target standard PMS formulations.</p>
       </div>
     </section>
 
-    <section class="space-y-6">
-      <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200/60 space-y-5">
-        <h3 class="font-black text-base uppercase tracking-wide text-[#1c4475] border-b border-gray-100 pb-2">Order Information</h3>
+    <!-- Right Side Validation Form -->
+    <section>
+      <div class="card">
+        <h3 style="font-size: 18px; font-weight: 900; color: #1c4475; border-bottom: 1px solid #f3f4f6; padding-bottom: 8px; margin: 0 0 16px 0; text-transform: uppercase;">Order Information</h3>
         
-        <div class="space-y-2.5 text-sm">
-          <div class="flex justify-between items-center bg-gray-50 p-2 rounded">
-            <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">Client Profile</span>
-            <span id="customer-name" class="font-bold text-gray-800">Loading...</span>
-          </div>
+        <div style="background-color: #f9fafb; padding: 12px; border-radius: 6px; margin-bottom: 24px;">
+          <span class="info-label">Client Profile</span>
+          <span id="customer-name" class="info-value">Loading...</span>
         </div>
 
-        <div id="action-panel" class="pt-2 space-y-4">
-          <div class="p-3 bg-slate-50 rounded-lg border border-slate-200/60">
-            <label class="flex items-start space-x-3 cursor-pointer">
-              <input type="checkbox" id="termsCheck" class="mt-1 h-4 w-4 rounded border-gray-300 text-[#1c4475] focus:ring-[#1c4475]" />
-              <span class="text-xs text-gray-600 font-medium leading-normal">
-                I authorize this layout specification as accurate. I approve moving line items into active fabrication queues under standard production timelines at Atlas Flags.
-              </span>
-            </label>
-          </div>
+        <div id="action-panel">
+          <label class="checkbox-container">
+            <input type="checkbox" id="termsCheck" />
+            <span class="checkbox-text">I authorize this layout specification as accurate. I approve moving line items into active fabrication queues under standard production timelines at Atlas Flags.</span>
+          </label>
 
-          <button id="approve-btn" onclick="submitDecision('approved')" class="w-full bg-[#e42424] hover:bg-red-700 text-white font-extrabold py-3.5 px-4 rounded-lg transition duration-150 ease-in-out shadow-md text-center uppercase tracking-wider text-xs">
-            Approve Layout & Begin Production
-          </button>
+          <button id="approve-btn" onclick="submitDecision('approved')" class="btn-approve">Approve Layout & Begin Production</button>
 
-          <div class="relative flex py-1 items-center">
-            <div class="flex-grow border-t border-gray-200"></div>
-            <span class="flex-shrink mx-3 text-[10px] font-bold text-gray-400 uppercase tracking-widest">or</span>
-            <div class="flex-grow border-t border-gray-200"></div>
-          </div>
+          <div style="text-align: center; color: #9ca3af; font-size: 11px; font-weight: bold; uppercase; margin: 16px 0; text-transform: uppercase;">— or —</div>
 
-          <div class="space-y-2">
-            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wide">Need Changes?</label>
-            <textarea id="feedback-text" rows="3" placeholder="Describe exact modifications needed..." class="w-full text-xs p-3 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:ring-1 focus:ring-[#1c4475] focus:border-[#1c4475] transition focus:outline-none"></textarea>
-            <button onclick="submitDecision('revision')" class="w-full border border-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-50 text-xs transition tracking-wide uppercase">
-              Submit Revision Notes to Design Team
-            </button>
-          </div>
+          <label class="textarea-label">Need Changes?</label>
+          <textarea id="feedback-text" rows="3" placeholder="Describe exact modifications needed..."></textarea>
+          <button onclick="submitDecision('revision')" class="btn-revision">Submit Revision Notes to Design Team</button>
         </div>
 
-        <div id="success-panel" class="p-4 rounded-lg bg-green-50 text-green-800 text-center border border-green-200 hidden">
-          <p class="font-bold text-sm">Action Successfully Submitted</p>
-          <p id="success-msg" class="text-xs mt-1"></p>
+        <div id="success-panel" class="success-box">
+          <p style="font-weight: bold; margin: 0 0 4px 0; font-size: 15px;">Action Successfully Submitted</p>
+          <p id="success-msg" style="font-size: 12px; margin: 0;"></p>
         </div>
       </div>
     </section>
@@ -103,8 +117,8 @@
     const erpDomain = "https://erpnext.com";
 
     async function fetchQuoteFromERP(id) {
-      document.getElementById('spinner').classList.remove('hidden');
-      document.getElementById('manual-search').classList.add('hidden');
+      document.getElementById('spinner').style.display = 'block';
+      document.getElementById('manual-search').style.display = 'none';
       document.getElementById('loading-text').innerText = "Loading secure design specifications...";
       document.getElementById('quote-id-display').innerText = "Reference: " + id;
 
@@ -119,68 +133,11 @@
           if (data.custom_proof_file) {
             const imgEl = document.getElementById('proof-image');
             imgEl.src = erpDomain + data.custom_proof_file;
-            imgEl.classList.remove('hidden');
-            document.getElementById('no-image-placeholder').classList.add('hidden');
+            imgEl.style.display = 'block';
+            document.getElementById('no-image-placeholder').style.display = 'none';
           }
-          document.getElementById('loading').classList.add('hidden');
+          document.getElementById('loading').style.display = 'none';
         } else {
           showManualForm(`Could not locate quote reference "${id}". Double check the reference configuration digits.`);
         }
       } catch (err) {
-        showManualForm("Database communication gap. Please enter details explicitly.");
-      }
-    }
-
-    function showManualForm(msg) {
-      document.getElementById('spinner').classList.add('hidden');
-      document.getElementById('loading-text').innerText = msg;
-      document.getElementById('manual-search').classList.remove('hidden');
-    }
-
-    function loadManualQuote() {
-      const inputId = document.getElementById('manual-id-input').value.trim();
-      if (inputId) {
-        quoteId = inputId;
-        fetchQuoteFromERP(inputId);
-      }
-    }
-
-    window.onload = function() {
-      if (!quoteId) {
-        showManualForm("Missing reference code connection parameter.");
-      } else {
-        fetchQuoteFromERP(quoteId);
-      }
-    };
-
-    async function submitDecision(status) {
-      const isChecked = document.getElementById('termsCheck').checked;
-      const feedback = document.getElementById('feedback-text').value;
-
-      if (status === 'approved' && !isChecked) {
-        alert("Please confirm validation criteria checkboxes layout terms before submission.");
-        return;
-      }
-
-      document.getElementById('loading').classList.remove('hidden');
-      document.getElementById('spinner').classList.remove('hidden');
-      document.getElementById('manual-search').classList.add('hidden');
-      document.getElementById('loading-text').innerText = "Registering production authorization tokens...";
-
-      try {
-        const response = await fetch(`${erpDomain}/api/method/custom_app.api.submit_proof_decision`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            quotation_id: quoteId,
-            decision: status,
-            feedback: status === 'revision' ? feedback : null
-          })
-        });
-
-        if (response.ok) {
-          document.getElementById('action-panel').classList.add('hidden');
-          document.getElementById('success-panel').classList.remove('hidden');
-          document.getElementById('success-msg').innerText = status === 'approved' 
-            ? "Your approval has been logged. An automatic production draft order has been created for the team."
-            : "Your adjustments were transferred straight to our custom art desk.";
